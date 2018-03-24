@@ -92,22 +92,25 @@ void put(int s, char *com[]){
         uint16_t length;
     };
     struct ftp_header *send_header;
+    int error;
 
     fp = fopen(com[1],"r");
     n = strlen(com[1])+1;
-       
+    
+    printf("com[1] %s",com[1]);
+
     data = (uint8_t*)malloc(sizeof(struct ftp_header)+sizeof(uint8_t)*n);
     send_header = (struct ftp_header *) data;
 
-
     ftp_pay = data + sizeof(struct ftp_header);
-    memcpy(ftp_pay, com[1], n);
+    memcpy(ftp_pay,(uint8_t*) com[1], n);  
 
     send_header->type = 0x06;
     send_header->code = 0x00;
     send_header->length = htons(n);
 
-    send(s, data,sizeof(struct ftp_header)+n ,0);
+    error = send(s, data,sizeof(struct ftp_header)+n ,0);
+    printf("error = %d", error);
 
     do{
         n = fread(buf, sizeof(char), BUFSIZE, fp);
